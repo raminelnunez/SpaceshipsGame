@@ -126,11 +126,11 @@ class Player {
     this.displace();
   }
 
-  handleInput(direction) {
-    this.directionHandler(direction);
+  letGo(key) {
+    this.directions = this.directions.filter(dir => dir !== key)
   }
 
-  directionHandler(direction) {
+  pressed(key) {
     const opposites = {
       'up': 'down',
       'down': 'up',
@@ -138,12 +138,12 @@ class Player {
       'right': 'left'
     }
 
-    if (direction === undefined) {
+    if (key === undefined) {
       this.directions = [];
     } else {
-      this.directions = this.directions.filter(dir => dir !== opposites[direction])
-      if (!this.directions.includes(direction)) {
-        this.directions.push(direction);
+      this.directions = this.directions.filter(dir => dir !== opposites[key])
+      if (!this.directions.includes(key)) {
+        this.directions.push(key);
       }
     }
   }
@@ -307,5 +307,16 @@ document.addEventListener('keydown', function(e) {
       40: 'down'
   };
 
-  player.handleInput(allowedKeys[e.keyCode]);
+  player.pressed(allowedKeys[e.keyCode]);
+});
+
+document.addEventListener('keyup', function(e) {
+  const allowedKeys = {
+      37: 'left',
+      38: 'up',
+      39: 'right',
+      40: 'down'
+  };
+
+  player.letGo(allowedKeys[e.keyCode]);
 });
