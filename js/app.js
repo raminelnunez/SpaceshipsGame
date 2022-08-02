@@ -6,16 +6,12 @@ class Sun {
 }
 
 class Enemy {
-  constructor ([x,y], style, pace) {
+  constructor ([x,y], style, speed) {
     this.x = x;
     this.y = y;
     this.style = style;
-    this.pace = pace;
+    this.speed = speed;
     this.tactic = this.chasePlayer;
-  }
-
-  getRandomInt(max) {
-    return Math.floor(Math.random() * max);
   }
 
   checkPos() {
@@ -72,14 +68,14 @@ class Enemy {
 
 
   displace(direction) {
-    if (direction === 'up') { this.y = this.y - this.pace}
-    if (direction === 'down') { this.y = this.y + this.pace}
-    if (direction === 'left') { this.x = this.x - this.pace}
-    if (direction === 'right') { this.x = this.x + this.pace}
+    if (direction === 'up') { this.y = this.y - this.speed}
+    if (direction === 'down') { this.y = this.y + this.speed}
+    if (direction === 'left') { this.x = this.x - this.speed}
+    if (direction === 'right') { this.x = this.x + this.speed}
   }
 
   move() {
-    let newRandomNum345 = getRandomInt(10);
+    let newRandomNum345 = getRandomNum(10);
     if (newRandomNum345 % 3 === 0) {
       this.chasePlayer();
     } else {
@@ -165,6 +161,10 @@ class Player {
 }
 
 
+function getRandomNum(max) {
+  return Math.floor(Math.random() * max);
+}
+
 const html = {
   score: document.getElementById('score'),
   lives: document.getElementById('lives')
@@ -178,27 +178,40 @@ const PlayerProps = {
   startingPos: [450, 450],
 }
 
+
+function createEnemyProps(howMany) {
+
+  let enemyProps = [];
+  for (let i = 0; i < howMany; i++) {
+    enemyProps.push({
+      coords: [getRandomNum(800), getRandomNum(100)],
+      image: `enemy${i}`,
+      pace: getRandomNum(3)
+    })
+  }
+
+  return enemyProps;
+}
+
+let allEnemies = [];
+
+function initEnemies(props) {
+  
+  for (let enemy of props) {
+    allEnemies.push(new Enemy(enemy.coords, enemy.image, enemy.pace))
+  }
+}
+
 const screenLimit = {
   width: [0, 800],
   height: [0, 450],
 }
 
-function getRandomInt(max) {
-  return Math.floor(Math.random() * max);
-}
-
-const enemyCoords = [[getRandomInt(800), getRandomInt(100)], [getRandomInt(800), getRandomInt(100)], [getRandomInt(800), getRandomInt(100)] ]
 const sun = new Sun(400, 10);
-const player = new Player(startingPos, lives, playerSpeed);
-html.lives.innerHTML = `Lives: ${player.lives}`
-let enemy1 = new Enemy(enemyCoords[0], 'enemy1',1)
-let enemy2 = new Enemy(enemyCoords[1], 'enemy2',1)
-let enemy3 = new Enemy(enemyCoords[2], 'enemy3',2)
-let allEnemies = [enemy1, enemy2, enemy3];
+const player = new Player(PlayerProps.startingPos, PlayerProps.lives, PlayerProps.speed);
 
-// for(let enemy of allEnemies) {
-//   setInterval(function(){enemy.move();}, 500);
-// }
+html.lives.innerHTML = `Lives: ${player.lives}`
+
 
 function newLevel() {
   level++
@@ -258,24 +271,20 @@ function checkLoss() {
   }
 }
 
-function resetEnemyLocations() {
+function resetLocations() {
   for (let i = 0; i < allEnemies.length; i++) {
     allEnemies[i].x = (screenLimit.width[1] / allEnemies.length) * i;
-    allEnemies[i].y = getRandomInt(screenLimit.height[1] / 6)
+    allEnemies[i].y = getRandomNum(screenLimit.height[1] / 6)
   }
+  player.x = PlayerProps.startingPos[0];
+  player.y = PlayerProps.startingPos[1];
 }
 
 function resetGame() {
-  player.speed = playerSpeed;
-  for (let i = level; i > 0; i--) {
-    for (let enemy of allEnemies) {
-      enemy.pace = (enemy.pace / (1 + ((i + 1)/30)));
-      enemy.pace = Math.round(enemy.pace);
-    }
-  }
-  player.lives = lives;
-  level = -1;
-  newLevel();
+  sun = null;
+  player = null;
+  allEnemies = [];
+
   return
 }
 
