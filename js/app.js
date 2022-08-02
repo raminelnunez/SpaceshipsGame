@@ -63,6 +63,7 @@ class Enemy {
         preferredNewDir = dir;
       }
     }
+
     this.displace(preferredNewDir);
   }
 
@@ -88,8 +89,6 @@ class Enemy {
     this.move()
   };
 }
-
-
 
 class Player {
   constructor([x, y], lives, speed) {
@@ -178,6 +177,9 @@ const PlayerProps = {
   startingPos: [450, 450],
 }
 
+const sun = new Sun(400, 10);
+const player = new Player(PlayerProps.startingPos, PlayerProps.lives, PlayerProps.speed);
+let allEnemies = [];
 
 function createEnemyProps(howMany) {
 
@@ -193,8 +195,6 @@ function createEnemyProps(howMany) {
   return enemyProps;
 }
 
-let allEnemies = [];
-
 function initEnemies(props) {
   
   for (let enemy of props) {
@@ -207,10 +207,19 @@ const screenLimit = {
   height: [0, 450],
 }
 
-const sun = new Sun(400, 10);
-const player = new Player(PlayerProps.startingPos, PlayerProps.lives, PlayerProps.speed);
 
 html.lives.innerHTML = `Lives: ${player.lives}`
+
+
+function checkProximity(entity1, entity2, margin) {
+  let inProximity = false;
+  if (entity1.x - entity2.x <= margin) {
+    if (entity1.y - entity2.y <= margin) {
+      inProximity = true;
+    }
+  }
+  return inProximity;
+}
 
 
 function newLevel() {
