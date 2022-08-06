@@ -1,17 +1,50 @@
+function getRandomNum(max) {
+  return Math.floor(Math.random() * (max +1))
+}
+
+
+function chance(percentage) {
+  return getRandomNum(100) < percentage; 
+}
+
+function difference(a, b) {
+  return Math.abs(a - b);
+}
+
+function between(a, b) {
+  if (a < b) {
+    return a + (b/2);
+  } else {
+    return  a - (b/2);
+  }
+}
+
+function isCloseTo(a, b, margin) {
+  if (difference(a.x, b.x) <= margin) {
+    if (difference(a.y, b.y) <= margin) {
+      return true
+    } else {
+      return false
+    }
+  } else {
+    return false
+  }
+}
+
 class Sun {
   constructor(x, y) {
     this.x = x;
     this.y = y;
   }
 }
-
 class Enemy {
   constructor ([x,y], style, speed) {
     this.x = x;
     this.y = y;
     this.style = style;
     this.speed = speed;
-    this.tactic = this.chasePlayer;
+    this.move = this.flank;
+    this.id = getRandomNum(9999);
   }
 
   checkPos() {
@@ -28,65 +61,142 @@ class Enemy {
     if (this.x > screenLimit.width[1]) {
       this.x = screenLimit.width[1] - 1;
     }
+    for(let enemy of allEnemies) {
+      if (enemy.id !== this.id) {
+        if (isCloseTo(this, enemy, 50)) {
+          this.goAway(enemy.x, enemy.y, 5);
+        } 
+      }
+    }
   }
 
   chasePlayer() {
-    let dirsPref = {
-      'up': this.y - player.y,
-      'down': player.y - this.y,
-      'left': this.x - player.x,
-      'right': player.x - this.x,
-    }
+    this.goTo(player.x, player.y, 1);
+  }
 
-    let preferredNewDir;
-    let minNum = -1000;
-    for (let dir in dirsPref) {
-      if (minNum < dirsPref[dir]) {
-        minNum = dirsPref[dir];
-        preferredNewDir = dir;
-      }
+  jockey() {
+    this.goTo(player.x, this.y, 2);
+  }
+
+  runBack() {
+    const center = screenLimit.width[1]/2;
+    let targetX = between(center, player.x);
+
+    const back = screenLimit.height[1] /3;
+    if (player.y < back) {
+      this.goTo(targetX, player.y, 1.2); 
+    } else if (player.y > back) {
+      this.goTo(targetX, back, 1.2);
     }
-    this.displace(preferredNewDir);
   }
 
   flank() {
-    let dirsPref = {
-      'left': this.x - player.x,
-      'right': player.x - this.x,
+    const center = screenLimit.width[1]/2;
+    const rightFlank = center*1.67;
+    const leftFlank = center*0.33;
+    if (this.x >= center && this.x < rightFlank) {
+      this.goTo(rightFlank, this.y, 2);
+    } else if (this.x < center && this.x > leftFlank) {
+      this.goTo(leftFlank, this.y, 2);
     }
 
-    let preferredNewDir;
-    let minNum = -1000;
-    for (let dir in dirsPref) {
-      if (minNum < dirsPref[dir]) {
-        minNum = dirsPref[dir];
-        preferredNewDir = dir;
+    if (this.x >= rightFlank || this.x <= leftFlank) {
+      this.goTo(this.x, player.y, 2);
+      if (difference(this.y, player.y) < 100) {
+        this.move = this.chasePlayer;
       }
     }
-
-    this.displace(preferredNewDir);
   }
 
-
-  displace(direction) {
-    if (direction === 'up') { this.y = this.y - this.speed}
-    if (direction === 'down') { this.y = this.y + this.speed}
-    if (direction === 'left') { this.x = this.x - this.speed}
-    if (direction === 'right') { this.x = this.x + this.speed}
+  displace(dir, speed) {
+    if (dir === 'up') { this.y = this.y - speed}
+    if (dir === 'down') { this.y = this.y + speed}
+    if (dir === 'left') { this.x = this.x - speed}
+    if (dir === 'right') { this.x = this.x + speed}
   }
 
-  move() {
-    let newRandomNum345 = getRandomNum(10);
-    if (newRandomNum345 % 3 === 0) {
-      this.chasePlayer();
-    } else {
-      this.flank();
+  goTo(x, y, speedMultiplier) {
+    if (this.x < x) {
+      this.displace('right', this.speed*speedMultiplier)
+    } else if (this.x > x) {
+      this.displace('left', this.speed*speedMultiplier)
     }
+    if (this.y < y) {
+      this.displace('down', this.speed*speedMultiplier)
+    } else if (this.y > y) {
+      this.displace('up', this.speed*speedMultiplier)
+    }
+  }
+
+  goAway(x, y, speedMultiplier) {
+    if (this.x > x) {
+      this.displace('right', this.speed*speedMultiplier)
+    } else if (this.x < x) {
+      this.displace('left', this.speed*speedMultiplier)
+    }
+    if (this.y > y) {
+      this.displace('down', this.speed*speedMultiplier)
+    } else if (this.y < y) {
+      this.displace('up', this.speed*speedMultiplier)
+    }
+  }
+
+  changeMove() {
+    let moves = [this.chasePlayer, this.jockey, this.runBack, this.flank];
+    for (let enemy of allEnemies) {
+      moves = moves.filter(move => move !== enemy.move)
+    }
+    if (moves.length > 0) {
+      this.move = moves[getRandomNum(moves.length-1)];
+    }
+  }
+
+  isMoveTaken(move) {
+    let isMoveTaken = false;
+    for(let enemy of allEnemies) {
+      if (enemy.move === move) {
+        isMoveTaken = true;
+      }
+    }
+    return isMoveTaken
+  }
+
+  isAnyCloseToPlayer() {
+    let is = false;
+    for(let enemy of allEnemies) {
+      if (isCloseTo(enemy, player, 150) && enemy.id !== this.id) {
+        is = true;
+      }
+    }
+    return is
+  }
+
+  pickMove() {
+    if (isCloseTo(this, player, 150)) {
+      if (this.isAnyCloseToPlayer()) {
+        if (chance(50)) {
+          this.move = this.runBack;
+        } else {
+          this.move = this.flank;
+        }
+      } else if (!this.isMoveTaken(this.chasePlayer)) {
+        this.move = this.chasePlayer;
+      }
+    } else {
+      this.changeMove();
+    }
+  }
+
+  brain() {
+    if (chance(1)) {
+      this.changeMove();
+    }
+    this.move();
     this.checkPos();
   }
 
   update = function(dt) {
-    this.move()
+    this.brain()
   };
 }
 
@@ -160,10 +270,6 @@ class Player {
 }
 
 
-function getRandomNum(max) {
-  return Math.floor(Math.random() * max);
-}
-
 const html = {
   score: document.getElementById('score'),
   lives: document.getElementById('lives')
@@ -177,8 +283,8 @@ const PlayerProps = {
   startingPos: [450, 450],
 }
 
-const sun = new Sun(400, 10);
-const player = new Player(PlayerProps.startingPos, PlayerProps.lives, PlayerProps.speed);
+let sun = new Sun(400, 10);
+let player = new Player(PlayerProps.startingPos, PlayerProps.lives, PlayerProps.speed);
 let allEnemies = [];
 
 function createEnemyProps(howMany) {
@@ -187,8 +293,8 @@ function createEnemyProps(howMany) {
   for (let i = 0; i < howMany; i++) {
     enemyProps.push({
       coords: [getRandomNum(800), getRandomNum(100)],
-      image: `enemy${i}`,
-      pace: getRandomNum(3)
+      image: `enemy${i+1}`,
+      speed: 3,
     })
   }
 
@@ -198,7 +304,7 @@ function createEnemyProps(howMany) {
 function initEnemies(props) {
   
   for (let enemy of props) {
-    allEnemies.push(new Enemy(enemy.coords, enemy.image, enemy.pace))
+    allEnemies.push(new Enemy(enemy.coords, enemy.image, enemy.speed))
   }
 }
 
@@ -211,24 +317,12 @@ const screenLimit = {
 html.lives.innerHTML = `Lives: ${player.lives}`
 
 
-function checkProximity(entity1, entity2, margin) {
-  let inProximity = false;
-  if (entity1.x - entity2.x <= margin) {
-    if (entity1.y - entity2.y <= margin) {
-      inProximity = true;
-    }
-  }
-  return inProximity;
-}
-
-
 function newLevel() {
   level++
-  resetEnemyLocations()
+  resetLocations()
   alert(`level ${level}.`)
-  player.x = startingPos[0];
-  player.y = startingPos[1];
-  player.speed = (playerSpeed - level);
+  player.x = PlayerProps.startingPos[0];
+  player.y = PlayerProps.startingPos[1];
   for (let enemy of allEnemies) {
     enemy.pace = (enemy.pace * (1 + ((level + 1)/30)));
   }
@@ -236,15 +330,13 @@ function newLevel() {
   html.lives.innerHTML = `Lives: ${player.lives}`
 }
 
+function loss() {
+  
+}
+
 function checkWin() {
-  const goal = {
-    width: [(sun.x - 50), (sun.x + 50)],
-    height: (sun.y + 25),
-  }
-  if (player.y < goal.height) {
-    if (player.x > goal.width[0] && player.x < goal.width[1]) {
-      newLevel()
-    } 
+  if (isCloseTo(player, sun, 50)) {
+    newLevel();
   }
 }
 
@@ -252,31 +344,11 @@ function checkLoss() {
   if (player.lives < 0) {
     resetGame();
   }
-
   for (let enemy of allEnemies) {
-    const killzone = {
-      width: [(enemy.x - 50), (enemy.x + 50)],
-      height: [(enemy.y - 50), (enemy.y + 50)]
+    if (isCloseTo(player, enemy, 50)) {
+
     }
 
-    if (player.y < killzone.height[1] && player.y > killzone.height[0]) {
-      if (player.x > killzone.width[0] && player.x < killzone.width[1]) {
-        if (player.lives > 0) {
-          alert(`Ouch! You were annihilated, ${player.lives} lives left.`)
-          player.x = startingPos[0];
-          player.y = startingPos[1];
-        } else if (player.lives === 0) {
-          alert('No more lives left. Game over.')
-          player.x = 2000;
-          player.y = 2000;
-        }
-        player.lives--
-        if (player.lives >= 0) {
-          html.lives.innerHTML = `Lives: ${player.lives}`
-        }
-        resetEnemyLocations();
-      }
-    }
   }
 }
 
@@ -294,8 +366,14 @@ function resetGame() {
   player = null;
   allEnemies = [];
 
+  sun = new Sun(400, 10);
+  player = new Player(PlayerProps.startingPos, PlayerProps.lives, PlayerProps.speed);
+  allEnemies = [];
+  initEnemies(createEnemyProps(3));
   return
 }
+
+resetGame();
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
