@@ -47,7 +47,7 @@ class Enemy {
     this.y = y;
     this.style = style;
     this.speed = speed;
-    this.move = this.flank;
+    this.move = this.chasePlayer;
     this.id = getRandomNum(9999);
   }
 
@@ -202,8 +202,9 @@ class Enemy {
   }
 
   brain() {
+
     if (chance(1)) {
-      this.changeMove();
+      this.pickMove();
     }
     this.move();
     this.checkPos();
@@ -270,6 +271,10 @@ class Player {
         this.directions.push(key);
       }
     }
+  }
+
+  handleBoost() {
+
   }
 
   displace() {
