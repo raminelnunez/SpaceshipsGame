@@ -185,6 +185,9 @@ var Engine = (function(global) {
             playerImage = Resources.get('images/player_focused.png')
           }
         }
+        if (level >= 5) {
+          playerImage = Resources.get('images/player_hardened.png')
+        }
         if (level >= 7) {
           if (player.lives === PlayerProps.lives) {
             playerImage = Resources.get('images/player_gigachad.png')
@@ -277,7 +280,8 @@ var Engine = (function(global) {
         'images/player_smug.png',
         'images/player_stressed.png',
         'images/player_coping.png',
-        'images/player_vicious.png'
+        'images/player_vicious.png',
+        'images/player_hardened.png'
     ]);
 
     Resources.onReady(init);

@@ -324,7 +324,7 @@ function initEnemies(props) {
 }
 
 function resetEnemies(props) {
-  for (let i = 0; i < allEnemies.length-1; i++) {
+  for (let i = 0; i < allEnemies.length; i++) {
     allEnemies[i].x = props[i].coords[0];
     allEnemies[i].y = props[i].coords[1];
     allEnemies[i].speed = props[i].speed;
