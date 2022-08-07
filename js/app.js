@@ -1,3 +1,7 @@
+const screenLimit = {
+  width: [0, 1000],
+  height: [0, 700],
+}
 function getRandomNum(max) {
   return Math.floor(Math.random() * (max +1))
 }
@@ -31,7 +35,7 @@ function isCloseTo(a, b, margin) {
   }
 }
 
-class Sun {
+class Goal {
   constructor(x, y) {
     this.x = x;
     this.y = y;
@@ -61,11 +65,14 @@ class Enemy {
     if (this.x > screenLimit.width[1]) {
       this.x = screenLimit.width[1] - 1;
     }
+    if (isCloseTo(this, goal, 100)) {
+      this.goAway(goal.x, goal.y, 1);
+    }
     for(let enemy of allEnemies) {
       if (enemy.id !== this.id) {
         if (isCloseTo(this, enemy, 50)) {
-          this.goAway(enemy.x, enemy.y, 5);
-        } 
+          this.goAway(enemy.x, enemy.y, 1);
+        }
       }
     }
   }
@@ -102,7 +109,7 @@ class Enemy {
 
     if (this.x >= rightFlank || this.x <= leftFlank) {
       this.goTo(this.x, player.y, 2);
-      if (difference(this.y, player.y) < 100) {
+      if (difference(this.y, player.y) < (screenLimit.height[1]/5) *4) {
         this.move = this.chasePlayer;
       }
     }
@@ -172,11 +179,18 @@ class Enemy {
   }
 
   pickMove() {
-    if (isCloseTo(this, player, 150)) {
+    if (player.y <= this.y) {
+      if (chance(50)) {
+        this.move = this.runBack;
+      } else {
+        this.move = this.chasePlayer;
+      }
+    } 
+    if (isCloseTo(this, player, 200)) {
       if (this.isAnyCloseToPlayer()) {
         if (chance(50)) {
           this.move = this.runBack;
-        } else {
+        } else if (player.y > this.y && difference(player.y, this.y) > difference(this.x, screenLimit.width[1]/2)) {
           this.move = this.flank;
         }
       } else if (!this.isMoveTaken(this.chasePlayer)) {
@@ -271,8 +285,9 @@ class Player {
 
 
 const html = {
-  score: document.getElementById('score'),
-  lives: document.getElementById('lives')
+  level: document.getElementById('level'),
+  lives: document.getElementById('lives'),
+  canvas: document.getElementById('canvas')
 }
 
 let level = 0;
@@ -280,10 +295,10 @@ let level = 0;
 const PlayerProps = {
   speed: 5,
   lives: 4,
-  startingPos: [450, 450],
+  startingPos: [screenLimit.width[1]/2, (screenLimit.height[1]/5) *4],
 }
 
-let sun = new Sun(400, 10);
+let goal = new Goal(screenLimit.width[1]/2, 10);
 let player = new Player(PlayerProps.startingPos, PlayerProps.lives, PlayerProps.speed);
 let allEnemies = [];
 
@@ -292,9 +307,9 @@ function createEnemyProps(howMany) {
   let enemyProps = [];
   for (let i = 0; i < howMany; i++) {
     enemyProps.push({
-      coords: [getRandomNum(800), getRandomNum(100)],
+      coords: [getRandomNum(screenLimit.width[1]), getRandomNum(screenLimit.height[1]/5)],
       image: `enemy${i+1}`,
-      speed: 3,
+      speed: 2,
     })
   }
 
@@ -308,34 +323,36 @@ function initEnemies(props) {
   }
 }
 
-const screenLimit = {
-  width: [0, 800],
-  height: [0, 450],
+function resetEnemies(props) {
+  for (let i = 0; i < allEnemies.length-1; i++) {
+    allEnemies[i].x = props[i].coords[0];
+    allEnemies[i].y = props[i].coords[1];
+    allEnemies[i].speed = props[i].speed;
+  }
 }
-
-
-html.lives.innerHTML = `Lives: ${player.lives}`
 
 
 function newLevel() {
   level++
   resetLocations()
-  alert(`level ${level}.`)
-  player.x = PlayerProps.startingPos[0];
-  player.y = PlayerProps.startingPos[1];
   for (let enemy of allEnemies) {
-    enemy.pace = (enemy.pace * (1 + ((level + 1)/30)));
+    enemy.speed = (enemy.speed * (1 + ((level + 1)/30)));
   }
-  html.score.innerHTML = `Level: ${level}`
-  html.lives.innerHTML = `Lives: ${player.lives}`
+  html.level.innerHTML = `Level: ${level}`
 }
 
 function loss() {
-  
+  if (player.lives <= 0) {
+    resetGame()
+  } else {
+    resetLocations();
+    player.lives += -1;
+    html.lives.innerHTML = `Lives: ${player.lives}`
+  }
 }
 
 function checkWin() {
-  if (isCloseTo(player, sun, 50)) {
+  if (isCloseTo(player, goal, 50)) {
     newLevel();
   }
 }
@@ -346,9 +363,8 @@ function checkLoss() {
   }
   for (let enemy of allEnemies) {
     if (isCloseTo(player, enemy, 50)) {
-
+      loss();
     }
-
   }
 }
 
@@ -359,21 +375,34 @@ function resetLocations() {
   }
   player.x = PlayerProps.startingPos[0];
   player.y = PlayerProps.startingPos[1];
+  player.directions = [];
 }
 
 function resetGame() {
-  sun = null;
-  player = null;
-  allEnemies = [];
+  level = 0;
+  player.lives = PlayerProps.lives;
+  player.speed = PlayerProps.speed;
+  player.x = PlayerProps.startingPos[0];
+  player.y = PlayerProps.startingPos[1];
+  resetEnemies(createEnemyProps(3));
 
-  sun = new Sun(400, 10);
-  player = new Player(PlayerProps.startingPos, PlayerProps.lives, PlayerProps.speed);
-  allEnemies = [];
-  initEnemies(createEnemyProps(3));
+  html.level.innerHTML = `Level: ${level}`
+  html.lives.innerHTML = `Lives: ${player.lives}`
   return
 }
 
-resetGame();
+function initGame() {
+  level = 0;
+  goal = new Goal(screenLimit.width[1]/2, 10);
+  player = new Player(PlayerProps.startingPos, PlayerProps.lives, PlayerProps.speed);
+  initEnemies(createEnemyProps(3));
+
+  html.level.innerHTML = `Level: ${level}`
+  html.lives.innerHTML = `Lives: ${player.lives}`
+  return
+}
+
+initGame();
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
@@ -398,3 +427,4 @@ document.addEventListener('keyup', function(e) {
 
   player.letGo(allowedKeys[e.keyCode]);
 });
+

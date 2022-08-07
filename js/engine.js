@@ -24,8 +24,8 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         lastTime;
 
-        canvas.width = 900;
-        canvas.height = 534;
+        canvas.width = 1100; //900
+        canvas.height = 800; //534
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
@@ -146,7 +146,7 @@ var Engine = (function(global) {
      */
     function renderEntities() {
 
-        ctx.drawImage(Resources.get('images/sun.png'), sun.x, sun.y);
+        ctx.drawImage(Resources.get('images/goal.png'), goal.x, goal.y);
 
 
         /* Loop through all of the objects within the allEnemies array and call
@@ -163,7 +163,26 @@ var Engine = (function(global) {
           player.frameIndex = 0;
         }
 
-        const playerImage = Resources.get('images/player.png');
+        let playerImage = Resources.get('images/player.png')
+        if (player.lives <= (PlayerProps.lives/2)-1) {
+          if (level >= 4) {
+            playerImage = Resources.get('images/player_focused.png')
+          } else {
+            if (player.lives > 1) {
+              playerImage = Resources.get('images/player_coping.png')
+            } else {
+              playerImage = Resources.get('images/player_stressed.png')
+            }
+          }
+        }
+        if (player.lives === PlayerProps.lives) {
+          if (level >= 3) {
+            playerImage = Resources.get('images/player_smug.png')
+          }
+          if (level >= 5) {
+            playerImage = Resources.get('images/player_gigachad.png')
+          }
+        }
 
         ctx.drawImage(
           playerImage,
@@ -192,7 +211,7 @@ var Engine = (function(global) {
             enemy.frameIndex = 0;
           }
 
-          const image = Resources.get(`images/${enemy.style}-rtl.png`);
+          const image = Resources.get(`images/${enemy.style}.png`);
 
           ctx.drawImage(
             image,
@@ -237,16 +256,17 @@ var Engine = (function(global) {
      */
     Resources.load([
         'images/background.png',
-        'images/enemy1-ltr.png',
-        'images/enemy2-ltr.png',
-        'images/enemy3-ltr.png',
-        'images/enemy1-rtl.png',
-        'images/enemy2-rtl.png',
-        'images/enemy3-rtl.png',
-        'images/enemy4-rtl.png',
-        'images/enemy4-ltr.png',
-        'images/sun.png',
+        'images/enemy1.png',
+        'images/enemy2.png',
+        'images/enemy3.png',
+        'images/enemy4.png',
+        'images/goal.png',
         'images/player.png',
+        'images/player_focused.png',
+        'images/player_gigachad.png',
+        'images/player_smug.png',
+        'images/player_stressed.png',
+        'images/player_coping.png'
     ]);
 
     Resources.onReady(init);

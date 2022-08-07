@@ -7,18 +7,27 @@
     <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
-    <canvas id="canvas"></canvas>
-
-    <div class="info">
-      <div class="title">AHHH, Spaceships!</div>
-      <div class="right">
-        <div id="score">Level:<span>0</span></div>
-        <div id="lives">Lives:<span>3</span></div>
+  <div>
+    <div id="top">
+      <canvas id="canvas"></canvas>
+      <div id="top-buttons">
+        <div id="goback">
+          <a href="index.html">Go Back</a>      
+        </div>
+        <div id="controls">
+        </div>
       </div>
     </div>
-    <div id="goback">
-      <a href="index.html">Go Back</a>      
+    <div class="info">
+      <div class="title">
+        <span>escape or... PERISH!!</span>
+      </div>
+      <div class="right">
+        <div id="level"></div>
+        <div id="lives"></div>
+      </div>
     </div>
+  </div>
 
     <script src="js/resources.js"></script>
     <script src="js/app.js"></script>
