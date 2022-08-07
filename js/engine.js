@@ -164,23 +164,33 @@ var Engine = (function(global) {
         }
 
         let playerImage = Resources.get('images/player.png')
-        if (player.lives <= (PlayerProps.lives/2)-1) {
-          if (level >= 4) {
-            playerImage = Resources.get('images/player_focused.png')
-          } else {
-            if (player.lives > 1) {
-              playerImage = Resources.get('images/player_coping.png')
-            } else {
-              playerImage = Resources.get('images/player_stressed.png')
-            }
+
+
+
+        if (level < 3) {
+          if (player.lives <= (PlayerProps.lives/2)-1) {
+            playerImage = Resources.get('images/player_stressed.png')
           }
         }
-        if (player.lives === PlayerProps.lives) {
-          if (level >= 3) {
+        if (level >= 3) {
+          if (player.lives === PlayerProps.lives) {
             playerImage = Resources.get('images/player_smug.png')
           }
-          if (level >= 5) {
+          if (player.lives <= (PlayerProps.lives/2)-1) {
+            playerImage = Resources.get('images/player_coping.png')
+          }
+        }
+        if (level >= 4) {
+          if (player.lives <= (PlayerProps.lives/2)-1) {
+            playerImage = Resources.get('images/player_focused.png')
+          }
+        }
+        if (level >= 7) {
+          if (player.lives === PlayerProps.lives) {
             playerImage = Resources.get('images/player_gigachad.png')
+          }
+          if (player.lives <= (PlayerProps.lives/2)-1) {
+            playerImage = Resources.get('images/player_vicious.png')
           }
         }
 
@@ -266,7 +276,8 @@ var Engine = (function(global) {
         'images/player_gigachad.png',
         'images/player_smug.png',
         'images/player_stressed.png',
-        'images/player_coping.png'
+        'images/player_coping.png',
+        'images/player_vicious.png'
     ]);
 
     Resources.onReady(init);
