@@ -53,10 +53,19 @@ canvas {
   transition-duration: 0.5s;
 }
 
-#controls {
+#wojaks {
   text-align: center;
   margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
 }
+
+.wojak img {
+  width: 8rem;
+  height: 8rem;
+}
+
+
 .control {
   font-family: Arial, Helvetica, sans-serif;
   font-weight: 500;
@@ -66,3 +75,4 @@ canvas {
   padding: 0.8rem;
   border-radius: 10%;
 }
+

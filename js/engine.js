@@ -13,6 +13,32 @@
  * writing app.js a little simpler to work with.
  */
 
+let unlockedWojaks = [];
+
+function renderWojaks() {
+  let wojakDisplay = document.getElementById('wojaks');
+  wojakDisplay.innerHTML = "";
+  for(let wojak of unlockedWojaks) {
+    wojakDisplay.insertAdjacentHTML('beforeend', `
+      <div class="wojak">
+        <img src="${wojak}" alt="">
+      </div>
+    `)
+  }
+  if (unlockedWojaks.length > 0) {
+    let wojaks = document.getElementsByClassName('wojak');
+    for (let wojak of wojaks) {
+      wojak.style.clip = "rect(0px,50px,50px,0px)";
+    }
+  }
+}
+
+function unlockWojak(wojak) {
+  if (!unlockedWojaks.includes(wojak)) {
+    unlockedWojaks.push(wojak);
+  }
+}
+
 var Engine = (function(global) {
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
@@ -164,38 +190,48 @@ var Engine = (function(global) {
         }
 
         let playerImage = Resources.get('images/player.png')
-
-
+        let wojakToUnlock;
 
         if (level < 3) {
           if (player.lives <= (PlayerProps.lives/2)-1) {
             playerImage = Resources.get('images/player_stressed.png')
+            wojakToUnlock = 'images/player_stressed.png'
           }
         }
         if (level >= 3) {
           if (player.lives === PlayerProps.lives) {
             playerImage = Resources.get('images/player_smug.png')
+            wojakToUnlock = 'images/player_smug.png'
           }
           if (player.lives <= (PlayerProps.lives/2)-1) {
             playerImage = Resources.get('images/player_coping.png')
+            wojakToUnlock = 'images/player_coping.png'
           }
         }
         if (level >= 4) {
           if (player.lives <= (PlayerProps.lives/2)-1) {
             playerImage = Resources.get('images/player_focused.png')
+            wojakToUnlock = 'images/player_focused.png'
           }
         }
         if (level >= 5) {
           playerImage = Resources.get('images/player_hardened.png')
+          wojakToUnlock = 'images/player_hardened.png'
         }
         if (level >= 7) {
           if (player.lives === PlayerProps.lives) {
             playerImage = Resources.get('images/player_gigachad.png')
+            wojakToUnlock = 'images/player_gigachad.png'
           }
           if (player.lives <= (PlayerProps.lives/2)-1) {
             playerImage = Resources.get('images/player_vicious.png')
+            wojakToUnlock = 'images/player_vicious.png'
           }
         }
+        if (wojakToUnlock !== undefined) {
+          unlockWojak(wojakToUnlock.substring(0, wojakToUnlock.length-4) + "_trophy.png");
+        }
+        renderWojaks();
 
         ctx.drawImage(
           playerImage,
