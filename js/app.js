@@ -314,7 +314,7 @@ function createEnemyProps(howMany) {
     enemyProps.push({
       coords: [getRandomNum(screenLimit.width[1]), getRandomNum(screenLimit.height[1]/5)],
       image: `enemy${i+1}`,
-      speed: 0,
+      speed: 2,
     })
   }
 
