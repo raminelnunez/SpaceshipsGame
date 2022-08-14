@@ -292,7 +292,21 @@ class Player {
 const html = {
   level: document.getElementById('level'),
   lives: document.getElementById('lives'),
-  canvas: document.getElementById('canvas')
+  canvas: document.getElementById('canvas'),
+  message_to_player: document.getElementById('message_to_player')
+}
+
+function clearMessage() {
+  html.message_to_player.innerHTML = "";
+  html.message_to_player.style.visibility = 'hidden';
+  clearTimeout(timeout);
+}
+
+let timeout;
+function displayMessage(message) {
+  html.message_to_player.innerHTML = `<h1>${message}</h1>`;
+  html.message_to_player.style.visibility = 'visible';
+  timeout = setTimeout(clearMessage, 3000);
 }
 
 let level = 0;
@@ -348,6 +362,7 @@ function newLevel() {
 
 function loss() {
   if (player.lives <= 0) {
+    displayMessage('GAME OVER')
     resetGame()
   } else {
     resetLocations();
@@ -363,9 +378,6 @@ function checkWin() {
 }
 
 function checkLoss() {
-  if (player.lives < 0) {
-    resetGame();
-  }
   for (let enemy of allEnemies) {
     if (isCloseTo(player, enemy, 50)) {
       loss();
@@ -432,4 +444,3 @@ document.addEventListener('keyup', function(e) {
 
   player.letGo(allowedKeys[e.keyCode]);
 });
-

@@ -8,6 +8,18 @@ canvas {
   max-height: 48rem;
 }
 
+#message_to_player {
+  visibility: hidden;
+  font-size: larger;
+  font-family: Arial, Helvetica, sans-serif;
+  position: absolute;
+  top: 35%;
+  right: 45%;
+  width: 20%;
+  height: 10%;
+  border: 1rem dashed #c50202;
+}
+
 #first {
   display: flex;
   flex-direction: row;
@@ -22,9 +34,9 @@ canvas {
 
 .info {
   font-size: 50px;
+  font-family: Arial, Helvetica, sans-serif;
   width: 1000px;
   margin: auto;
-  font-family: Arial, Helvetica, sans-serif;
   color: white;
   display: flex;
   justify-content:space-between;
