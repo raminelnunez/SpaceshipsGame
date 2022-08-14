@@ -35,7 +35,7 @@ function isCloseTo(a, b, margin) {
   }
 }
 
-class Goal {
+class Sun {
   constructor(x, y) {
     this.x = x;
     this.y = y;
@@ -47,6 +47,7 @@ class Enemy {
     this.y = y;
     this.style = style;
     this.speed = speed;
+    this.direction = 'right';
     this.move = this.chasePlayer;
     this.id = getRandomNum(9999);
   }
@@ -65,8 +66,8 @@ class Enemy {
     if (this.x > screenLimit.width[1]) {
       this.x = screenLimit.width[1] - 1;
     }
-    if (isCloseTo(this, goal, 100)) {
-      this.goAway(goal.x, goal.y, 1);
+    if (isCloseTo(this, sun, 100)) {
+      this.goAway(sun.x, sun.y, 1);
     }
     for(let enemy of allEnemies) {
       if (enemy.id !== this.id) {
@@ -118,8 +119,8 @@ class Enemy {
   displace(dir, speed) {
     if (dir === 'up') { this.y = this.y - speed}
     if (dir === 'down') { this.y = this.y + speed}
-    if (dir === 'left') { this.x = this.x - speed}
-    if (dir === 'right') { this.x = this.x + speed}
+    if (dir === 'left') { this.x = this.x - speed; this.direction = 'left'}
+    if (dir === 'right') { this.x = this.x + speed; this.direction = 'right'}
   }
 
   goTo(x, y, speedMultiplier) {
@@ -317,7 +318,7 @@ const PlayerProps = {
   startingPos: [screenLimit.width[1]/2, (screenLimit.height[1]/5) *4],
 }
 
-let goal = new Goal(screenLimit.width[1]/2, 10);
+let sun = new Sun(screenLimit.width[1]/2, 10);
 let player = new Player(PlayerProps.startingPos, PlayerProps.lives, PlayerProps.speed);
 let allEnemies = [];
 
@@ -372,7 +373,7 @@ function loss() {
 }
 
 function checkWin() {
-  if (isCloseTo(player, goal, 50)) {
+  if (isCloseTo(player, sun, 50)) {
     newLevel();
   }
 }
@@ -410,7 +411,7 @@ function resetGame() {
 
 function initGame() {
   level = 0;
-  goal = new Goal(screenLimit.width[1]/2, 10);
+  sun = new Sun(screenLimit.width[1]/2, 10);
   player = new Player(PlayerProps.startingPos, PlayerProps.lives, PlayerProps.speed);
   initEnemies(createEnemyProps(3));
 

@@ -6,12 +6,11 @@ var Engine = (function(global) {
       ctx = canvas.getContext('2d'),
       lastTime;
 
-      canvas.width = 900;
-      canvas.height = 534;
-
+      canvas.width = 1100;
+      canvas.height = 800;
 
   function main() {
-
+     
       var now = Date.now(),
           dt = (now - lastTime) / 1000.0;
 
@@ -23,6 +22,7 @@ var Engine = (function(global) {
       win.requestAnimationFrame(main);
   }
 
+
   function init() {
       reset();
       lastTime = Date.now();
@@ -33,7 +33,6 @@ var Engine = (function(global) {
       updateEntities(dt);
   }
 
-
   function updateEntities(dt) {
       allEnemies.forEach(function(enemy) {
           enemy.update(dt);
@@ -42,9 +41,11 @@ var Engine = (function(global) {
   }
 
   function render() {
-
+     
       ctx.clearRect(0,0,canvas.width,canvas.height);
+
       ctx.drawImage(Resources.get('images/background.png'), 0, 0);
+
       renderEntities();
   }
 
@@ -131,7 +132,7 @@ var Engine = (function(global) {
       'images/enemy2-left.png',
       'images/enemy3-left.png',
       'images/enemy4-left.png',
-      'images/enemy4-left.png',
+      'images/enemy4-right.png',
       'images/sun.png',
       'images/player.png',
   ]);

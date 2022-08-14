@@ -9,15 +9,17 @@ canvas {
 }
 
 #message_to_player {
-  visibility: hidden;
-  font-size: larger;
+  font-size: large;
   font-family: Arial, Helvetica, sans-serif;
+  color: azure;
+  visibility: hidden;
   position: absolute;
   top: 35%;
-  right: 45%;
-  width: 20%;
-  height: 10%;
-  border: 1rem dashed #c50202;
+  right: 38%;
+  width: 25%;
+  height: 12%;
+  border: 1rem solid #3466f0c0;
+  border-radius: 50%;
 }
 
 #first {
@@ -72,22 +74,6 @@ canvas {
   transition-duration: 0.5s;
 }
 
-#wojaks {
-  text-align: center;
-  margin: 2rem;
-  display: flex;
-  flex-direction: column;
-}
-
-.wojak img {
-  width: 8rem;
-  height: 8rem;
-  margin: 4px;
-  border: solid gold 6px;
-  border-radius: 3%;
-}
-
-
 .control {
   font-family: Arial, Helvetica, sans-serif;
   font-weight: 500;
@@ -97,13 +83,3 @@ canvas {
   padding: 0.8rem;
   border-radius: 10%;
 }
-
-#unlocked-wojaks-title {
-  font-size: 25px;
-  margin: 1.5rem;
-  font-family: Arial, Helvetica, sans-serif;
-  color: white;
-  display: flex;
-  justify-content:space-between;
-}
-
