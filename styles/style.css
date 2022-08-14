@@ -11,14 +11,15 @@ canvas {
 #message_to_player {
   font-size: large;
   font-family: Arial, Helvetica, sans-serif;
-  color: azure;
+  color: whitesmoke;
+  background-color: lightcoral;
   visibility: hidden;
   position: absolute;
   top: 35%;
   right: 38%;
   width: 25%;
   height: 12%;
-  border: 1rem solid #3466f0c0;
+  border: 1rem solid rgb(248, 104, 104);
   border-radius: 50%;
 }
 
