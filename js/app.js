@@ -307,14 +307,14 @@ let timeout;
 function displayMessage(message) {
   html.message_to_player.innerHTML = `<h1>${message}</h1>`;
   html.message_to_player.style.visibility = 'visible';
-  timeout = setTimeout(clearMessage, 3000);
+  timeout = setTimeout(clearMessage, 500);
 }
 
 let level = 0;
 
 const PlayerProps = {
-  speed: 5,
-  lives: 4,
+  speed: 7,
+  lives: 3,
   startingPos: [screenLimit.width[1]/2, (screenLimit.height[1]/5) *4],
 }
 
@@ -329,7 +329,7 @@ function createEnemyProps(howMany) {
     enemyProps.push({
       coords: [getRandomNum(screenLimit.width[1]), getRandomNum(screenLimit.height[1]/5)],
       image: `enemy${i+1}`,
-      speed: 2,
+      speed: 3,
     })
   }
 
