@@ -48,7 +48,7 @@ canvas {
 .right {
   width: 400px;
   display: flex;
-  justify-content: inherit;
+  justify-content: space-around;
 }
 
 #goback {

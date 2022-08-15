@@ -294,6 +294,8 @@ const html = {
   level: document.getElementById('level'),
   lives: document.getElementById('lives'),
   canvas: document.getElementById('canvas'),
+  score: document.getElementById('score'),
+  seconds: document.getElementById('seconds'),
   message_to_player: document.getElementById('message_to_player')
 }
 
@@ -317,7 +319,10 @@ function displayMessage(message) {
   timeout = setTimeout(clearMessage, 500);
 }
 
+let timer;
 let level = 0;
+let seconds = 0;
+let score = 0;
 
 const PlayerProps = {
   speed: 7,
@@ -336,7 +341,7 @@ function createEnemyProps(howMany) {
     enemyProps.push({
       coords: [getRandomNum(screenLimit.width[1]), getRandomNum(screenLimit.height[1]/5)],
       image: `enemy${i+1}`,
-      speed: 2,
+      speed: 2.4,
     })
   }
 
@@ -358,15 +363,36 @@ function resetEnemies(props) {
   }
 }
 
+function incrementSeconds() {
+  seconds++;
+  html.seconds.innerHTML = `Time: ${seconds}`;
+}
+
+function addScore() {
+  score += ((level+1) * 10) - seconds;
+  html.score.innerHTML = `Score: ${score}`;
+}
+
+function removeScore() {
+  score -= (50 / (level + 1)) + seconds;
+  score = Math.round(score);
+  if (score < 0) {
+    score = 0;
+  }
+  html.score.innerHTML = `Score: ${score}`;
+}
 
 function newLevel() {
+  seconds = 0;
+  html.seconds.innerHTML = `Time: ${seconds}`;
   audio.win.play();
   level++
   resetLocations()
   for (let enemy of allEnemies) {
-    enemy.speed = (enemy.speed * (1 + ((level + 1)/30)));
+    enemy.speed = (enemy.speed * (1 + ((level + 1)/50)));
   }
   html.level.innerHTML = `Level: ${level}`
+  addScore();
 }
 
 function loss() {
@@ -380,6 +406,7 @@ function loss() {
     player.lives += -1;
     html.lives.innerHTML = `Lives: ${player.lives}`
   }
+  removeScore();
 }
 
 function checkWin() {
@@ -407,6 +434,7 @@ function resetLocations() {
 }
 
 function resetGame() {
+  seconds = 0;
   level = 0;
   player.lives = PlayerProps.lives;
   player.speed = PlayerProps.speed;
@@ -420,6 +448,7 @@ function resetGame() {
 }
 
 function initGame() {
+  timer = setInterval(incrementSeconds, 1000);
   level = 0;
   sun = new Sun(screenLimit.width[1]/2, 10);
   player = new Player(PlayerProps.startingPos, PlayerProps.lives, PlayerProps.speed);
@@ -427,6 +456,8 @@ function initGame() {
 
   html.level.innerHTML = `Level: ${level}`
   html.lives.innerHTML = `Lives: ${player.lives}`
+  html.score.innerHTML = `Score: ${score}`;
+  html.seconds.innerHTML = `Time: ${seconds}`;
   return
 }
 
