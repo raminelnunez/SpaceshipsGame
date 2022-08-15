@@ -336,7 +336,7 @@ function createEnemyProps(howMany) {
     enemyProps.push({
       coords: [getRandomNum(screenLimit.width[1]), getRandomNum(screenLimit.height[1]/5)],
       image: `enemy${i+1}`,
-      speed: 3,
+      speed: 2,
     })
   }
 
@@ -432,8 +432,6 @@ function initGame() {
 
 initGame();
 
-// This listens for key presses and sends the keys to your
-// Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keydown', function(e) {
   audio.music.play()
   const allowedKeys = {
