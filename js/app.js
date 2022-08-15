@@ -299,6 +299,9 @@ const html = {
 
 const audio = {
   gameOver: new Audio('./audio/game_over.mp3'),
+  win: new Audio('./audio/win.mp3'),
+  youDied: new Audio('./audio/you_died.mp3'),
+  music: new Audio('./audio/background_music.mp3')
 }
 
 function clearMessage() {
@@ -357,6 +360,7 @@ function resetEnemies(props) {
 
 
 function newLevel() {
+  audio.win.play();
   level++
   resetLocations()
   for (let enemy of allEnemies) {
@@ -367,9 +371,11 @@ function newLevel() {
 
 function loss() {
   if (player.lives <= 0) {
+    audio.gameOver.play();
     displayMessage('GAME OVER')
     resetGame()
   } else {
+    audio.youDied.play();
     resetLocations();
     player.lives += -1;
     html.lives.innerHTML = `Lives: ${player.lives}`
@@ -429,6 +435,7 @@ initGame();
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keydown', function(e) {
+  audio.music.play()
   const allowedKeys = {
       37: 'left',
       38: 'up',
