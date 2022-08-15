@@ -297,6 +297,10 @@ const html = {
   message_to_player: document.getElementById('message_to_player')
 }
 
+const audio = {
+  gameOver: new Audio('./audio/game_over.mp3'),
+}
+
 function clearMessage() {
   html.message_to_player.innerHTML = "";
   html.message_to_player.style.visibility = 'hidden';
