@@ -45,18 +45,23 @@ canvas {
   justify-content:space-between;
 }
 
+.info > * {
+  margin-top: 2rem;
+}
+
 .right {
   width: 400px;
   display: flex;
   justify-content: space-around;
 }
 
-#goback {
+.small-button {
   text-align: center;
-  margin-top: 2rem;
+  margin: 2rem;
+  margin-top: 3rem;
 }
 
-#goback > a {
+.small-button > * {
   font-family: Arial, Helvetica, sans-serif;
   font-weight: 500;
   text-decoration: none;
@@ -66,7 +71,7 @@ canvas {
   border-radius: 10%;
 }
 
-#goback > a:hover {
+.small-button > *:hover {
   font-weight: 700;
   padding: 0.6rem;
   background-color: #c3e76a;

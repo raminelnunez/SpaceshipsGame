@@ -212,7 +212,9 @@ class Enemy {
   }
 
   update = function(dt) {
-    this.brain()
+    if (!isGamePaused) {
+      this.brain()
+    }
   };
 }
 
@@ -247,9 +249,11 @@ class Player {
   }
 
   update() {
-    checkLoss()
-    checkWin()
-    this.displace();
+    if (!isGamePaused) {
+      checkLoss()
+      checkWin()
+      this.displace();
+    }
   }
 
   letGo(key) {
@@ -289,14 +293,15 @@ class Player {
   
 }
 
-
 const html = {
   level: document.getElementById('level'),
   lives: document.getElementById('lives'),
   canvas: document.getElementById('canvas'),
   score: document.getElementById('score'),
   seconds: document.getElementById('seconds'),
-  message_to_player: document.getElementById('message_to_player')
+  message_to_player: document.getElementById('message_to_player'),
+  music_button: document.getElementById('music-button'),
+  pause: document.getElementById('pause')
 }
 
 const audio = {
@@ -320,6 +325,7 @@ function displayMessage(message) {
 }
 
 let timer;
+let isMusic = true;
 let level = 0;
 let seconds = 0;
 let score = 0;
@@ -364,8 +370,10 @@ function resetEnemies(props) {
 }
 
 function incrementSeconds() {
-  seconds++;
-  html.seconds.innerHTML = `Time: ${seconds}`;
+  if (!isGamePaused) {
+    seconds++;
+    html.seconds.innerHTML = `Time: ${seconds}`;
+  }
 }
 
 function addScore() {
@@ -463,8 +471,31 @@ function initGame() {
 
 initGame();
 
+let isGamePaused = false;
+function pauseGame() {
+  if (isGamePaused) {
+    isGamePaused = false;
+  } else {
+    isGamePaused = true;
+  }
+  console.log('pauseGame', isGamePaused)
+}
+
+function handleMusic() {
+  if (isMusic) {
+    isMusic = false
+    audio.music.pause();
+  } else {
+    isMusic = true;
+    audio.music.play();
+  }
+}
+
 document.addEventListener('keydown', function(e) {
-  audio.music.play()
+  console.log("isMusic?", isMusic)
+  if (isMusic) {
+    audio.music.play()
+  }
   const allowedKeys = {
       37: 'left',
       38: 'up',
@@ -485,3 +516,8 @@ document.addEventListener('keyup', function(e) {
 
   player.letGo(allowedKeys[e.keyCode]);
 });
+
+html.music_button.addEventListener('click', handleMusic);
+
+html.pause.addEventListener('click', pauseGame);
+
