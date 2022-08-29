@@ -312,7 +312,7 @@ const audio = {
 }
 
 function clearMessage() {
-  html.message_to_player.innerHTML = "";
+  html.message_to_player.innerText = "";
   html.message_to_player.style.visibility = 'hidden';
   clearTimeout(timeout);
 }
@@ -372,13 +372,13 @@ function resetEnemies(props) {
 function incrementSeconds() {
   if (!isGamePaused) {
     seconds++;
-    html.seconds.innerHTML = `Time: ${seconds}`;
+    html.seconds.innerText = `Time: ${seconds}`;
   }
 }
 
 function addScore() {
   score += ((level+1) * 10) - seconds;
-  html.score.innerHTML = `Score: ${score}`;
+  html.score.innerText = `Score: ${score}`;
 }
 
 function removeScore() {
@@ -387,19 +387,19 @@ function removeScore() {
   if (score < 0) {
     score = 0;
   }
-  html.score.innerHTML = `Score: ${score}`;
+  html.score.innerText = `Score: ${score}`;
 }
 
 function newLevel() {
   seconds = 0;
-  html.seconds.innerHTML = `Time: ${seconds}`;
+  html.seconds.innerText = `Time: ${seconds}`;
   audio.win.play();
   level++
   resetLocations()
   for (let enemy of allEnemies) {
     enemy.speed = (enemy.speed * (1 + ((level + 1)/50)));
   }
-  html.level.innerHTML = `Level: ${level}`
+  html.level.innerText = `Level: ${level}`
   addScore();
 }
 
@@ -412,7 +412,7 @@ function loss() {
     audio.youDied.play();
     resetLocations();
     player.lives += -1;
-    html.lives.innerHTML = `Lives: ${player.lives}`
+    html.lives.innerText = `Lives: ${player.lives}`
   }
   removeScore();
 }
@@ -450,8 +450,8 @@ function resetGame() {
   player.y = PlayerProps.startingPos[1];
   resetEnemies(createEnemyProps(3));
 
-  html.level.innerHTML = `Level: ${level}`
-  html.lives.innerHTML = `Lives: ${player.lives}`
+  html.level.innerText = `Level: ${level}`
+  html.lives.innerText = `Lives: ${player.lives}`
   return
 }
 
@@ -462,40 +462,39 @@ function initGame() {
   player = new Player(PlayerProps.startingPos, PlayerProps.lives, PlayerProps.speed);
   initEnemies(createEnemyProps(3));
 
-  html.level.innerHTML = `Level: ${level}`
-  html.lives.innerHTML = `Lives: ${player.lives}`
-  html.score.innerHTML = `Score: ${score}`;
-  html.seconds.innerHTML = `Time: ${seconds}`;
+  html.level.innerText = `Level: ${level}`
+  html.lives.innerText = `Lives: ${player.lives}`
+  html.score.innerText = `Score: ${score}`;
+  html.seconds.innerText = `Time: ${seconds}`;
   return
 }
 
 initGame();
 
 let isGamePaused = false;
-function pauseGame() {
+function handlePause() {
   if (isGamePaused) {
     isGamePaused = false;
+    html.pause.innerText = "Pause";
   } else {
     isGamePaused = true;
+    html.pause.innerText = "Unpause";
   }
-  console.log('pauseGame', isGamePaused)
 }
 
 function handleMusic() {
   if (isMusic) {
     isMusic = false
     audio.music.pause();
+    html.music_button.innerText = "Turn Music ON";
   } else {
     isMusic = true;
     audio.music.play();
+    html.music_button.innerText = "Turn Music OFF";
   }
 }
 
 document.addEventListener('keydown', function(e) {
-  console.log("isMusic?", isMusic)
-  if (isMusic) {
-    audio.music.play()
-  }
   const allowedKeys = {
       37: 'left',
       38: 'up',
@@ -519,5 +518,5 @@ document.addEventListener('keyup', function(e) {
 
 html.music_button.addEventListener('click', handleMusic);
 
-html.pause.addEventListener('click', pauseGame);
+html.pause.addEventListener('click', handlePause);
 
