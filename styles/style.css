@@ -15,8 +15,8 @@ canvas {
   background-color: lightcoral;
   visibility: hidden;
   position: absolute;
-  top: 35%;
-  right: 38%;
+  top: 30%;
+  right: 40%;
   width: 25%;
   height: 12%;
   border: 1rem solid rgb(248, 104, 104);

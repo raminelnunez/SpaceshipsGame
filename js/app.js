@@ -318,10 +318,10 @@ function clearMessage() {
 }
 
 let timeout;
-function displayMessage(message) {
+function displayMessage(message, seconds) {
   html.message_to_player.innerHTML = `<h1>${message}</h1>`;
   html.message_to_player.style.visibility = 'visible';
-  timeout = setTimeout(clearMessage, 500);
+  timeout = setTimeout(clearMessage, (seconds*1000));
 }
 
 let timer;
@@ -406,7 +406,7 @@ function newLevel() {
 function loss() {
   if (player.lives <= 0) {
     audio.gameOver.play();
-    displayMessage('GAME OVER')
+    displayMessage('GAME OVER', 0.5)
     resetGame()
   } else {
     audio.youDied.play();
@@ -466,12 +466,14 @@ function initGame() {
   html.lives.innerText = `Lives: ${player.lives}`
   html.score.innerText = `Score: ${score}`;
   html.seconds.innerText = `Time: ${seconds}`;
+  displayMessage('Reach The Sun', 2);
+  setTimeout(handlePause, 2200);
   return
 }
 
 initGame();
 
-let isGamePaused = false;
+let isGamePaused = true;
 function handlePause() {
   if (isGamePaused) {
     isGamePaused = false;
