@@ -16,11 +16,7 @@ function difference(a, b) {
 }
 
 function between(a, b) {
-  if (a < b) {
-    return a + (b/2);
-  } else {
-    return  a - (b/2);
-  }
+  return (a+b)/2;
 }
 
 function isCloseTo(a, b, margin) {
