@@ -2,9 +2,11 @@ var Engine = (function(global) {
 
   var doc = global.document,
       win = global.window,
-      canvas = document.getElementById('canvas'),
-      ctx = canvas.getContext('2d'),
-      lastTime;
+    canvas = document.getElementById("canvas"),
+    ctx = canvas.getContext("2d"),
+    lastTime = 0,
+    accumulator = 0,
+    step = 1 / 60;
 
       canvas.width = 1100;
       canvas.height = 800;
@@ -12,9 +14,15 @@ var Engine = (function(global) {
   function main() {
      
       var now = Date.now(),
-          dt = (now - lastTime) / 1000.0;
+      frameTime = Math.min(0.25, (now - lastTime) / 1000.0);
 
-      update(dt);
+    accumulator += frameTime;
+
+    while (accumulator >= step) {
+      update(step);
+      accumulator -= step;
+    }
+
       render();
 
       lastTime = now;
