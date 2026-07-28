@@ -332,7 +332,7 @@ function clearMessage() {
 
 let timeout;
 function displayMessage(message, seconds) {
-  html.message_to_player.innerHTML = `<h1>${message}</h1>`;
+  html.message_to_player.innerHTML = `<h1>${message.toUpperCase()}</h1>`;
   html.message_to_player.style.visibility = "visible";
   timeout = setTimeout(clearMessage, seconds * 1000);
 }
@@ -390,13 +390,13 @@ function resetEnemies(props) {
 function incrementSeconds() {
   if (!isGamePaused) {
     seconds++;
-    html.seconds.innerText = `Time: ${seconds}`;
+    html.seconds.innerText = `TIME: ${seconds}`;
   }
 }
 
 function addScore() {
   score += (level + 1) * 10 - seconds;
-  html.score.innerText = `Score: ${score}`;
+  html.score.innerText = `SCORE: ${score}`;
 }
 
 function removeScore() {
@@ -405,19 +405,19 @@ function removeScore() {
   if (score < 0) {
     score = 0;
   }
-  html.score.innerText = `Score: ${score}`;
+  html.score.innerText = `SCORE: ${score}`;
 }
 
 function newLevel() {
   seconds = 0;
-  html.seconds.innerText = `Time: ${seconds}`;
+  html.seconds.innerText = `TIME: ${seconds}`;
   audio.win.play();
   level++;
   resetLocations();
   for (let enemy of allEnemies) {
     enemy.speed = enemy.speed * (1 + (level + 1) / 50);
   }
-  html.level.innerText = `Level: ${level}`;
+  html.level.innerText = `LEVEL: ${level}`;
   addScore();
 }
 
@@ -430,7 +430,7 @@ function loss() {
     audio.youDied.play();
     resetLocations();
     player.lives += -1;
-    html.lives.innerText = `Lives: ${player.lives}`;
+    html.lives.innerText = `LIVES: ${player.lives}`;
   }
   removeScore();
 }
@@ -468,8 +468,8 @@ function resetGame() {
   player.y = PlayerProps.startingPos[1];
   resetEnemies(createEnemyProps(3));
 
-  html.level.innerText = `Level: ${level}`;
-  html.lives.innerText = `Lives: ${player.lives}`;
+  html.level.innerText = `LEVEL: ${level}`;
+  html.lives.innerText = `LIVES: ${player.lives}`;
   return;
 }
 
@@ -484,10 +484,10 @@ function initGame() {
   );
   initEnemies(createEnemyProps(3));
 
-  html.level.innerText = `Level: ${level}`;
-  html.lives.innerText = `Lives: ${player.lives}`;
-  html.score.innerText = `Score: ${score}`;
-  html.seconds.innerText = `Time: ${seconds}`;
+  html.level.innerText = `LEVEL: ${level}`;
+  html.lives.innerText = `LIVES: ${player.lives}`;
+  html.score.innerText = `SCORE: ${score}`;
+  html.seconds.innerText = `TIME: ${seconds}`;
   displayMessage("Reach The Sun", 2);
   setTimeout(handlePause, 2200);
   return;
