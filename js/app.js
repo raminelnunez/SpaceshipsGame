@@ -415,7 +415,7 @@ function newLevel() {
   level++;
   resetLocations();
   for (let enemy of allEnemies) {
-    enemy.speed = enemy.speed * (1 + (level + 1) / 50);
+    enemy.speed *= 1.05;
   }
   html.level.innerText = `LEVEL: ${level}`;
   addScore();
