@@ -532,7 +532,7 @@ function newLevel() {
   html.seconds.innerText = `TIME: ${seconds}`;
   audio.win.play();
   level++;
-  resetLocations();
+  resetLevel();
   for (let enemy of allEnemies) {
     enemy.speed *= 1.05;
   }
@@ -547,7 +547,7 @@ function loss() {
     resetGame();
   } else {
     audio.youDied.play();
-    resetLocations();
+    resetLevel();
     player.lives += -1;
     html.lives.innerText = `LIVES: ${player.lives}`;
   }
@@ -568,7 +568,7 @@ function checkLoss() {
   }
 }
 
-function resetLocations() {
+function resetLevel() {
   for (let i = 0; i < allEnemies.length; i++) {
     allEnemies[i].x = (screenLimit.width[1] / allEnemies.length) * i;
     allEnemies[i].y = getRandomNum(screenLimit.height[1] / 6);
@@ -578,6 +578,7 @@ function resetLocations() {
   player.y = PlayerProps.startingPos[1];
   player.directions = [];
   activeMines = [];
+  mineCooldown = 0;
 }
 
 function resetGame() {
