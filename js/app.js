@@ -502,6 +502,7 @@ function resetEnemies(props) {
     allEnemies[i].x = props[i].coords[0];
     allEnemies[i].y = props[i].coords[1];
     allEnemies[i].speed = props[i].speed;
+    allEnemies[i].stunnedUntil = 0;
   }
 }
 
@@ -571,10 +572,12 @@ function resetLocations() {
   for (let i = 0; i < allEnemies.length; i++) {
     allEnemies[i].x = (screenLimit.width[1] / allEnemies.length) * i;
     allEnemies[i].y = getRandomNum(screenLimit.height[1] / 6);
+    allEnemies[i].stunnedUntil = 0;
   }
   player.x = PlayerProps.startingPos[0];
   player.y = PlayerProps.startingPos[1];
   player.directions = [];
+  activeMines = [];
 }
 
 function resetGame() {
