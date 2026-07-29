@@ -103,17 +103,32 @@ var Engine = (function (global) {
         `images/${enemy.style}-${enemy.direction}.png`,
       );
 
+      const isStunned = enemy.stunnedUntil > Date.now();
+      const wobble = isStunned ? Math.sin(Date.now() / 220) * 4 : 0;
+      const drawWidth = image.naturalWidth;
+      const drawHeight = image.naturalHeight / enemy.numberOfFrames;
+      const drawX = enemy.x;
+      const drawY = enemy.y + wobble;
+
+      ctx.save();
+      if (isStunned) {
+        ctx.translate(drawX + drawWidth / 2, drawY + drawHeight / 2);
+        ctx.scale(1, -1);
+        ctx.translate(-(drawX + drawWidth / 2), -(drawY + drawHeight / 2));
+      }
+
       ctx.drawImage(
         image,
         0,
         (enemy.frameIndex * image.naturalHeight) / enemy.numberOfFrames,
         image.naturalWidth,
         image.naturalHeight / enemy.numberOfFrames,
-        enemy.x,
-        enemy.y,
-        image.naturalWidth,
-        image.naturalHeight / enemy.numberOfFrames,
+        drawX,
+        drawY,
+        drawWidth,
+        drawHeight,
       );
+      ctx.restore();
     });
 
     activeMines.forEach(function (mine) {
