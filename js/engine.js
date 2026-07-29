@@ -43,6 +43,7 @@ var Engine = (function (global) {
       enemy.update(dt);
     });
     player.update();
+    updateMines(dt);
     updateAnimations();
   }
 
@@ -113,6 +114,59 @@ var Engine = (function (global) {
         image.naturalWidth,
         image.naturalHeight / enemy.numberOfFrames,
       );
+    });
+
+    activeMines.forEach(function (mine) {
+      if (mine.exploded) {
+        const progress = Math.max(0, mine.explosionTimer / 0.35);
+        const radius = 18 + (1 - progress) * mine.explosionRadius;
+
+        ctx.save();
+        ctx.globalAlpha = progress;
+        ctx.strokeStyle = "#ffe082";
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.arc(mine.x, mine.y, radius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = "#ff5722";
+        ctx.beginPath();
+        ctx.arc(mine.x, mine.y, 12 + (1 - progress) * 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        return;
+      }
+
+      const pulse = 0.7 + 0.25 * Math.sin(Date.now() / 180);
+
+      ctx.save();
+      ctx.strokeStyle = "rgba(255, 213, 79, 0.8)";
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.arc(mine.x, mine.y, mine.triggerRadius * 0.5, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.setLineDash([]);
+      ctx.fillStyle = "#ff3d00";
+      ctx.beginPath();
+      ctx.arc(mine.x, mine.y, 10 + pulse * 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(mine.x, mine.y, 12, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.strokeStyle = "#ffd54f";
+      ctx.beginPath();
+      ctx.moveTo(mine.x - 4, mine.y);
+      ctx.lineTo(mine.x + 4, mine.y);
+      ctx.moveTo(mine.x, mine.y - 4);
+      ctx.lineTo(mine.x, mine.y + 4);
+      ctx.stroke();
+      ctx.restore();
     });
   }
 

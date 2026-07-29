@@ -1,34 +1,39 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>escape</title>
-    <link href="https://fonts.googleapis.com/css?family=VT323&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles/style.css">
-</head>
-<body>
-  <div id="first">
-    <div>
-      <div id="top">
-        <canvas id="canvas"></canvas>
+    <link
+      href="https://fonts.googleapis.com/css?family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/style.css" />
+  </head>
+  <body>
+    <div id="first">
+      <div>
+        <div id="top">
+          <canvas id="canvas"></canvas>
+        </div>
+        <div id="message_to_player"></div>
+        <div class="info">
+          <div id="seconds"></div>
+          <div id="level"></div>
+          <div id="lives"></div>
+          <div id="score"></div>
+        </div>
       </div>
-      <div id="message_to_player"></div>
-      <div class="info">
-        <div id="seconds"></div>
-        <div id="level"></div>
-        <div id="lives"></div>
-        <div id="score"></div>
+      <div id="top-buttons">
+        <div class="small-button" id="goback">
+          <a href="../index.html">Go Back</a>
+        </div>
+        <div class="small-button">
+          <button id="music-button">Turn Music ON</button>
+        </div>
+        <div class="small-button"><button id="pause">Pause</button></div>
       </div>
     </div>
-    <div id="top-buttons">
-      <div class="small-button" id="goback">
-        <a href="../index.html">Go Back</a>      
-      </div>
-      <div class="small-button"><button id="music-button">Turn Music ON</button></div>
-      <div class="small-button"><button id="pause">Pause</button></div>
-    </div>
-  </div>
-  <!-- <div id="bottom-controls">
+    <!-- <div id="bottom-controls">
     <div class="control-buttons" id="button-up"><span>up</span></div>
     <div id="buttons_leftright">
       <div class="control-buttons" id="button-left"><span>left</span></div>
@@ -36,10 +41,9 @@
     </div>
     <div class="control-buttons" id="button-down"><span>down</span></div>
   </div> -->
-  
 
     <script src="js/resources.js"></script>
     <script src="js/app.js"></script>
     <script src="js/engine.js"></script>
-</body>
+  </body>
 </html>

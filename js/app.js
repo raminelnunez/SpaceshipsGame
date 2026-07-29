@@ -14,6 +14,10 @@ function difference(a, b) {
   return Math.abs(a - b);
 }
 
+function distance(a, b, c, d) {
+  return Math.hypot(a - c, b - d);
+}
+
 function between(a, b) {
   return (a + b) / 2;
 }
@@ -36,6 +40,62 @@ class Sun {
     this.y = y;
   }
 }
+
+class Mine {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.triggerRadius = 70;
+    this.explosionRadius = 135;
+    this.timeLeft = 2.25;
+    this.active = true;
+    this.exploded = false;
+    this.explosionTimer = 0.35;
+    this.state = "armed";
+  }
+
+  update(dt) {
+    if (this.exploded) {
+      this.explosionTimer -= dt;
+      return;
+    }
+
+    if (!this.active) {
+      return;
+    }
+
+    if (this.isTriggered()) {
+      this.explode();
+      return;
+    }
+
+    this.timeLeft -= dt;
+
+    if (this.timeLeft <= 0) {
+      this.explode();
+    }
+  }
+
+  isTriggered() {
+    const playerDistance = distance(player.x, player.y, this.x, this.y);
+    if (playerDistance <= this.triggerRadius) {
+      return false;
+    }
+
+    return allEnemies.some((enemy) => {
+      return distance(enemy.x, enemy.y, this.x, this.y) <= this.triggerRadius;
+    });
+  }
+
+  explode() {
+    this.active = false;
+    this.exploded = true;
+    this.state = "exploding";
+    stunNearbyEnemies(this);
+    playMineExplodedSound();
+  }
+}
+
 class Enemy {
   constructor([x, y], style, speed) {
     this.x = x;
@@ -45,6 +105,7 @@ class Enemy {
     this.direction = "right";
     this.move = this.chasePlayer;
     this.id = getRandomNum(9999);
+    this.stunnedUntil = 0;
   }
 
   checkPos() {
@@ -221,6 +282,9 @@ class Enemy {
 
   update = function (dt) {
     if (!isGamePaused) {
+      if (this.stunnedUntil > Date.now()) {
+        return;
+      }
       this.brain();
     }
   };
@@ -322,7 +386,23 @@ const audio = {
   win: new Audio("./audio/win.mp3"),
   youDied: new Audio("./audio/you_died.mp3"),
   music: new Audio("./audio/background_music.mp3"),
+  minePlace: new Audio("./audio/boop.mp3"),
+  mineExplode: new Audio("./audio/boom.mp3"),
 };
+
+function playMinePlacedSound() {
+  if (audio.minePlace) {
+    audio.minePlace.currentTime = 0;
+    audio.minePlace.play().catch(() => {});
+  }
+}
+
+function playMineExplodedSound() {
+  if (audio.mineExplode) {
+    audio.mineExplode.currentTime = 0;
+    audio.mineExplode.play().catch(() => {});
+  }
+}
 
 function clearMessage() {
   html.message_to_player.innerText = "";
@@ -356,6 +436,44 @@ let player = new Player(
   PlayerProps.speed,
 );
 let allEnemies = [];
+let activeMines = [];
+let mineCooldown = 0;
+const mineConfig = {
+  cooldown: 2.5,
+  stunDuration: 2200,
+};
+
+function stunNearbyEnemies(mine) {
+  const now = Date.now();
+
+  allEnemies.forEach((enemy) => {
+    if (distance(enemy.x, enemy.y, mine.x, mine.y) <= mine.explosionRadius) {
+      enemy.stunnedUntil = now + mineConfig.stunDuration;
+    }
+  });
+}
+
+function updateMines(dt) {
+  mineCooldown = Math.max(0, mineCooldown - dt);
+
+  activeMines.forEach((mine) => {
+    mine.update(dt);
+  });
+
+  activeMines = activeMines.filter((mine) => {
+    return !(mine.exploded && mine.explosionTimer <= 0);
+  });
+}
+
+function dropMine() {
+  if (isGamePaused || mineCooldown > 0) {
+    return;
+  }
+
+  activeMines.push(new Mine(player.x, player.y));
+  mineCooldown = mineConfig.cooldown;
+  playMinePlacedSound();
+}
 
 function createEnemyProps(howMany) {
   let enemyProps = [];
@@ -467,6 +585,8 @@ function resetGame() {
   player.x = PlayerProps.startingPos[0];
   player.y = PlayerProps.startingPos[1];
   resetEnemies(createEnemyProps(3));
+  activeMines = [];
+  mineCooldown = 0;
 
   html.level.innerText = `LEVEL: ${level}`;
   html.lives.innerText = `LIVES: ${player.lives}`;
@@ -483,6 +603,8 @@ function initGame() {
     PlayerProps.speed,
   );
   initEnemies(createEnemyProps(3));
+  activeMines = [];
+  mineCooldown = 0;
 
   html.level.innerText = `LEVEL: ${level}`;
   html.lives.innerText = `LIVES: ${player.lives}`;
@@ -530,11 +652,26 @@ const allowedKeys = {
 };
 
 document.addEventListener("keydown", function (e) {
-  player.pressed(allowedKeys[e.keyCode]);
+  const action = allowedKeys[e.keyCode];
+
+  if (action) {
+    e.preventDefault();
+    player.pressed(action);
+    return;
+  }
+
+  if (e.code === "Space" || e.key.toLowerCase() === "m") {
+    e.preventDefault();
+    dropMine();
+  }
 });
 
 document.addEventListener("keyup", function (e) {
-  player.letGo(allowedKeys[e.keyCode]);
+  const action = allowedKeys[e.keyCode];
+  if (action) {
+    e.preventDefault();
+    player.letGo(action);
+  }
 });
 
 html.music_button.addEventListener("click", handleMusic);
